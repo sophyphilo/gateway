@@ -7,6 +7,9 @@ logPath: './logs'
 # Port to expose the gateway server on
 port: 15888
 
+# Websocket port
+websocketPort: 35888
+
 # IPs allowed to access gateway. localhost is allowed by default.
 ipWhitelist: []
 
