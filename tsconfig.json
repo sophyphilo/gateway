@@ -32,5 +32,5 @@
     "src/**/*.js",
     "test/**/*.ts",
     "integration-test/**/*.ts"
-  ]
+, "src/connectors/uniswap/uniswap_v2.bakts"  ]
 }

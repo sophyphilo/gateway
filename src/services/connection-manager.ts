@@ -17,6 +17,7 @@ import { Perp } from '../connectors/perp/perp';
 import { Quickswap } from '../connectors/quickswap/quickswap';
 import { PancakeSwap } from '../connectors/pancakeswap/pancakeswap';
 import { Uniswap } from '../connectors/uniswap/uniswap';
+import { UniswapV2 } from '../connectors/uniswap/uniswap_v2';
 import { UniswapLP } from '../connectors/uniswap/uniswap.lp';
 import { VVSConnector } from '../connectors/vvs/vvs';
 import {
@@ -195,6 +196,8 @@ export async function getConnector<T>(
 
   if (connector === 'uniswap') {
     connectorInstance = Uniswap.getInstance(chain, network);
+  } else if (connector === 'uniswap_v2') {
+    connectorInstance = UniswapV2.getInstance(chain, network);
   } else if (connector === 'uniswapLP') {
     connectorInstance = UniswapLP.getInstance(chain, network);
   } else if (connector === 'quickswap') {

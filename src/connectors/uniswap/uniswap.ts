@@ -80,10 +80,15 @@ export class Uniswap implements Uniswapish {
     this._ttl = UniswapConfig.config.ttl;
     this._maximumHops = UniswapConfig.config.maximumHops;
 
+    if (config.useRouter) {
       this._alphaRouter = new AlphaRouter({
-      chainId: this.chainId,
-      provider: this.chain.provider,
-    });
+        chainId: this.chainId,
+        provider: this.chain.provider,
+      });
+    } else {
+      this._alphaRouter = null;
+    }
+
     this._routerAbi = routerAbi.abi;
     this._gasLimitEstimate = UniswapConfig.config.gasLimitEstimate;
     this._router = config.uniswapV3SmartOrderRouterAddress(chain, network);

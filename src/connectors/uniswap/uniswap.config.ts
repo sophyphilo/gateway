@@ -10,6 +10,10 @@ export namespace UniswapConfig {
     uniswapV3NftManagerAddress: (chain: string, network: string) => string;
     uniswapV3FactoryAddress: (chain: string, network: string) => string;
     quoterContractAddress: (chain: string, network: string) => string;
+
+    uniswapV2RouterAddress: (chain: string, network: string) => string;
+    uniswapV2FactoryAddress: (chain: string, network: string) => string;
+
     tradingTypes: (type: string) => Array<string>;
     chainType: string;
     availableNetworks: Array<AvailableNetworks>;
@@ -58,6 +62,24 @@ export namespace UniswapConfig {
           network +
           '.uniswapV3QuoterV2ContractAddress'
       ),
+
+      uniswapV2RouterAddress: (chain: string, network: string) =>
+      ConfigManagerV2.getInstance().get(
+          'uniswap.contractAddresses.' +
+          chain +
+          '.' +
+          network +
+          '.uniswapV2RouterAddress'
+      ),
+    uniswapV2FactoryAddress: (chain: string, network: string) =>
+      ConfigManagerV2.getInstance().get(
+          'uniswap.contractAddresses.' +
+          chain +
+          '.' +
+          network +
+          '.uniswapV2FactoryAddress'
+      ),
+
     tradingTypes: (type: string) => {
       return type === 'swap' ? ['AMM'] : ['AMM_LP'];
     },

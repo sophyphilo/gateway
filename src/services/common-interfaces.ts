@@ -19,6 +19,7 @@ import { Provider } from '@ethersproject/abstract-provider';
 import { CurrencyAmount, Token, Trade as TradeUniswap } from '@uniswap/sdk';
 import { Trade } from '@uniswap/router-sdk';
 import { Trade as UniswapV3Trade } from '@uniswap/v3-sdk';
+import { Trade as UniswapV2Trade } from '@uniswap/v2-sdk';
 import {
   TradeType,
   Currency,
@@ -145,6 +146,7 @@ export type UniswapishTrade =
   | Trade<Currency, Currency, TradeType>
   | TradePangolin
   | UniswapV3Trade<Currency, UniswapCoreToken, TradeType>
+  | UniswapV2Trade<Currency, UniswapCoreToken, TradeType>
   | TradeQuickswap
   | TradeTraderjoe
   | SushiswapTrade<SushiToken, SushiToken, SushiTradeType>

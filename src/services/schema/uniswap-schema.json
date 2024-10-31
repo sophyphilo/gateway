@@ -22,7 +22,9 @@
                 "uniswapV3SmartOrderRouterAddress": { "type": "string" },
                 "uniswapV3NftManagerAddress": { "type": "string" },
                 "uniswapV3QuoterV2ContractAddress": { "type": "string" },
-                "uniswapV3FactoryAddress": { "type": "string" }
+                "uniswapV3FactoryAddress": { "type": "string" },
+                "uniswapV2RouterAddress": { "type": "string" },
+                "uniswapV2FactoryAddress" : { "type": "string" }
               },
               "required": [
                 "uniswapV3SmartOrderRouterAddress",
