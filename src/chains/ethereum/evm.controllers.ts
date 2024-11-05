@@ -167,7 +167,10 @@ export class EVMController {
       } else {
         // tx has been processed
         txBlock = txReceipt.blockNumber;
-        txStatus = typeof txReceipt.status === 'number' ? 1 : -1;
+        //txStatus = typeof txReceipt.status === 'number' ? 1 : -1;
+
+        // txReceipt.status, 0 = failed, 1 = success
+        txStatus = typeof txReceipt.status === 'number' ? ((txReceipt.status === 1) ? 1 : -1) : -1;
 
         // decode logs
         if (req.connector) {
