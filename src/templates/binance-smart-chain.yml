@@ -4,14 +4,14 @@ networks:
     chainID: 56
     nodeURL: 'https://binance.llamarpc.com'
     tokenListType: FILE
-    tokenListSource: /home/gateway/conf/lists/bep20_tokens_mainnet.json
+    tokenListSource: conf/lists/bep20_tokens_mainnet.json
     nativeCurrencySymbol: 'BNB'
     gasPriceRefreshInterval: 60
   testnet: 
     chainID: 97
     nodeURL: 'https://bsc-testnet.publicnode.com'
     tokenListType: 'FILE'
-    tokenListSource: '/home/gateway/conf/lists/bep20_tokens_testnet.json'
+    tokenListSource: 'conf/lists/bep20_tokens_testnet.json'
     nativeCurrencySymbol: 'BNB'
     gasPriceRefreshInterval: 60
 

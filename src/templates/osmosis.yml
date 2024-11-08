@@ -2,12 +2,12 @@ networks:
   mainnet:
     nodeURL: https://rpc.osmosis.zone/
     tokenListType: FILE
-    tokenListSource: /home/gateway/conf/lists/osmosis-1.assetlist.json
+    tokenListSource: conf/lists/osmosis-1.assetlist.json
     chainId: osmosis-1
   testnet:
     nodeURL: https://rpc.testnet.osmosis.zone/
     tokenListType: FILE
-    tokenListSource: /home/gateway/conf/lists/osmo-test-5-assetlist.json
+    tokenListSource: conf/lists/osmo-test-5-assetlist.json
     chainId: osmo-test-5
 network: mainnet
 nativeCurrencySymbol: OSMO
