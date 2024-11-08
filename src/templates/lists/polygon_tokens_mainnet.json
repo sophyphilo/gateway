@@ -183,7 +183,7 @@
       "logoURI": "https://wallet-asset.matic.network/img/tokens/uni.svg",
       "tags": ["pos", "erc20", "swapable", "metaTx"],
       "extensions": {
-        "rootAddress": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"
+        "rootAddress": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
       }
     },
     {

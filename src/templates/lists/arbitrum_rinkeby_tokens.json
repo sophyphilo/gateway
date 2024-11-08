@@ -65,7 +65,7 @@
       "extensions": {
         "bridgeInfo": {
           "4": {
-            "tokenAddress": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+            "tokenAddress": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
             "originBridgeAddress": "0x195c107f3f75c4c93eba7d9a1312f19305d6375f",
             "destBridgeAddress": "0x91169Dbb45e6804743F94609De50D511C437572E"
           }
@@ -128,7 +128,7 @@
     {
       "chainId": 4,
       "name": "Uniswap",
-      "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+      "address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
       "symbol": "UNI",
       "decimals": 18,
       "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png"
