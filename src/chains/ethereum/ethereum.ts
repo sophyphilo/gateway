@@ -185,6 +185,11 @@ export class Ethereum extends EthereumBase implements Ethereumish {
         this.chainName,
         this._chain,
       );
+    } else if (reqSpender === 'uniswap_v2') {
+      spender = UniswapConfig.config.uniswapV2RouterAddress(
+        this.chainName,
+        this._chain,
+      );
     } else if (reqSpender === 'pancakeswap') {
       spender = PancakeSwapConfig.config.routerAddress(this._chain);
     } else if (reqSpender === 'pancakeswapLP') {
