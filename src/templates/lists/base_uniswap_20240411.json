@@ -243,6 +243,14 @@
             "decimals": 18,
             "chainId": 8453,
             "logoURI": "https://ethereum-optimism.github.io/data/ZRX/logo.png"
+        },
+        {
+            "name": "Degen",
+            "address": "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed",
+            "symbol": "DEGEN",
+            "decimals": 18,
+            "chainId": 8453,
+            "logoURI": "https://assets.coingecko.com/coins/images/30487/thumb/degen_logo_twit.png?1684713904"
         }
     ]
 }
