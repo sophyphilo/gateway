@@ -20,7 +20,7 @@ import { CLOBRoutes, PerpClobRoutes } from './clob/clob.routes';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import { ChainRoutes } from './chains/chain.routes';
-import { WebSocketServer } from './websocket';
+//import { WebSocketServer } from './websocket';
 //import Blockchain from './models/blockchain';
 //import eventController from './controllers/eventController';
 
@@ -114,8 +114,8 @@ export const startSwagger = async () => {
 };
 
 export const startWebsocketServer = async () => {
-  const wss = new WebSocketServer();
-  wss.init();
+  //const wss = new WebSocketServer();
+  //wss.init();
 }
 
 export const startGateway = async () => {
@@ -143,6 +143,6 @@ export const startGateway = async () => {
       process.exit();
     }
   }
-  await startWebsocketServer();
+  //await startWebsocketServer();
   await startSwagger();
 };
