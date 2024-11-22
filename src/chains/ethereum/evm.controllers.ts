@@ -135,7 +135,7 @@ export class EVMController {
     const txData = await ethereumish.getTransaction(req.txHash);
     let txBlock, txReceipt, txStatus;
     if (!txData) {
-      console.log(`txHash: ${req.txHash}, txData: null`)
+      logger.info(`txHash: ${req.txHash}, txData: null`)
       // tx not found, didn't reach the mempool or it never existed
       txBlock = -1;
       txReceipt = null;
@@ -143,7 +143,7 @@ export class EVMController {
     } else {
       txReceipt = await ethereumish.getTransactionReceipt(req.txHash);
       if (txReceipt === null) {
-        console.log(`txHash: ${req.txHash}, txReceipt: null`)
+        logger.info(`txHash: ${req.txHash}, txReceipt: null`)
         // tx is in the mempool
         txBlock = -1;
         txReceipt = null;
@@ -167,7 +167,7 @@ export class EVMController {
           }
         }
       } else {
-        console.log(`txHash: ${req.txHash}, txReceipt: ${JSON.stringify(txReceipt)}`)
+        logger.info(`txHash: ${req.txHash}, txReceipt: ${JSON.stringify(txReceipt)}`)
         // tx has been processed
         txBlock = txReceipt.blockNumber;
         //txStatus = typeof txReceipt.status === 'number' ? 1 : -1;
