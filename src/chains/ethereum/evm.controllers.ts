@@ -139,7 +139,9 @@ export class EVMController {
       // tx not found, didn't reach the mempool or it never existed
       txBlock = -1;
       txReceipt = null;
-      txStatus = -1;
+      //txStatus = -1;
+      // 暂时先返回0，表明交易正在进行中，尚未确认结果
+      txStatus = 0;
     } else {
       txReceipt = await ethereumish.getTransactionReceipt(req.txHash);
       if (txReceipt === null) {
