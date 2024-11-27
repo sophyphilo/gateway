@@ -35,6 +35,7 @@ import {
 import { Ethereumish, Tezosish } from '../common-interfaces';
 import { Algorand } from '../../chains/algorand/algorand';
 import { Osmosis } from '../../chains/osmosis/osmosis';
+import { Solana } from '../../chains/solana/solana';
 
 export function convertXdcAddressToEthAddress(publicKey: string): string {
   return publicKey.length === 43 && publicKey.slice(0, 3) === 'xdc'
@@ -95,6 +96,10 @@ export async function addWallet(
         req.privateKey,
         passphrase
       );
+    } else if (connection instanceof Solana) {
+      const keypair = await connection.getAccountFromPrivateKey(req.privateKey);
+      address = keypair.address;
+      encryptedPrivateKey = connection.encrypt(req.privateKey, passphrase);
     } else if (connection instanceof Xdc) {
       address = convertXdcAddressToEthAddress(
         connection.getWalletFromPrivateKey(req.privateKey).address

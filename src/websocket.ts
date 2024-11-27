@@ -8,7 +8,7 @@ export class WebSocketServer {
     private clients: Set<WebSocket>;
 
     constructor() {
-        this.wss = new WebSocket.Server({ port: 35888/*config.port*/ });
+        this.wss = new WebSocket.Server({ port: 65888/*config.port*/ });
         this.clients = new Set<WebSocket>();
         eventController.setClients(this.clients);
         //this.init();

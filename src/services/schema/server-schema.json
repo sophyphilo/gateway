@@ -5,6 +5,7 @@
     "certificatePath": { "type": "string" },
     "logPath": { "type": "string" },
     "port": { "type": "integer" },
+    "websocketPort": { "type": "integer" },
     "ipWhitelist": { "type": "array" },
     "GMTOffset": { "type": "number" },
     "id": { "type": "string" },
