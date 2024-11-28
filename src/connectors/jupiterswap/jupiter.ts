@@ -1,5 +1,6 @@
 import LRUCache from 'lru-cache';
 import { Solana } from '../../chains/solana/solana';
+import { logger } from '../../services/logger';
 import { JupiterswapConfig } from './jupiterswap.config';
 import { getAlgorandConfig } from '../../chains/algorand/algorand.config';
 import { percentRegexp } from '../../services/config-manager-v2';
@@ -11,7 +12,7 @@ import {
 } from './jupiter.request';
 import { latency } from '../../services/base';
 import Decimal from 'decimal.js-light';
-import { getPairData } from './jupiter.controller';
+// import { getPairData } from './jupiter.controller';
 import { pow } from 'mathjs';
 import { Keypair, VersionedTransaction } from '@solana/web3.js';
 
@@ -79,19 +80,38 @@ export class Jupiter {
       throw new Error('INVALID TOKEN');
     }
 
-    const amount = Number(req.amount) * <number>pow(10, baseToken.decimals);
-    const baseURL = `https://quote-api.jup.ag/v6/quote?inputMint=${baseToken?.address}&outputMint=${quoteToken?.address}&amount=${amount}`;
-    const price = await getPairData(baseToken?.address, quoteToken?.address);
+    const isBuy: boolean = req.side === 'BUY';
+    const assetIn = isBuy ? quoteToken: baseToken;
+    const assetOut = isBuy ? baseToken : quoteToken;
 
+    const amount = Number(req.amount) * <number>pow(10, baseToken.decimals);
+    const baseURL = `https://quote-api.jup.ag/v6/quote?inputMint=${assetIn?.address}&outputMint=${assetOut?.address}&amount=${amount}`;
+
+    /*
+    const price = await getPairData(baseToken?.address, quoteToken?.address);
     const basePriceInUSD = price.data[baseToken?.address].price;
     const quotePriceInUSD = price.data[quoteToken?.address].price;
-
     const tokenPrice =
       req.side === 'BUY'
         ? Number(quotePriceInUSD) / Number(basePriceInUSD)
         : Number(basePriceInUSD) / Number(quotePriceInUSD);
+    */
+
     const response = await axios.get<JupiterQuoteResponse>(baseURL);
 
+    // 获取对应代币的 decimal 信息
+    const inputDecimal = assetIn.decimals || 6;
+    const outputDecimal = assetOut.decimals || 6;
+
+    const inAmount = parseFloat(response.data.inAmount) / Math.pow(10, inputDecimal);
+    const outAmount = parseFloat(response.data.outAmount) / Math.pow(10, outputDecimal);
+
+    const price = isBuy ? inAmount / outAmount : outAmount / inAmount;
+    logger.info(
+      `Best trade for ${baseToken.address}-${quoteToken.address}: ` +
+        `${price.toFixed(6)}` +
+        `${baseToken.symbol}.`
+    );
     return {
       timestamp: startTimestamp,
       latency: latency(startTimestamp, Date.now()),
@@ -100,10 +120,10 @@ export class Jupiter {
       amount: new Decimal(req.amount).toFixed(6),
       rawAmount: response.data.inAmount,
       expectedAmount: response.data.outAmount,
-      price: tokenPrice.toString(),
+      price: price.toString(),
       gasPrice: 0.0001,
       gasLimit: 100000,
-      expectedPrice: tokenPrice,
+      expectedPrice: price,
       trade: response.data,
     };
   }
