@@ -16,6 +16,8 @@ export interface PriceRequest extends NetworkSelectionRequest {
   side: Side;
   allowedSlippage?: string;
   poolId?: string;
+  dexes?: string[];
+  onlyDirectRoutes?: boolean;
 }
 
 export interface PriceResponse {
@@ -70,6 +72,8 @@ export interface TradeRequest extends NetworkSelectionRequest {
   maxPriorityFeePerGas?: string;
   allowedSlippage?: string;
   poolId?: string;
+  dexes?: string[];
+  onlyDirectRoutes?: boolean;
 }
 
 export interface TradeResponse {

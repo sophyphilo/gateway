@@ -55,9 +55,11 @@ export class Jupiter {
     }
     this._ready = true;
   }
+
   public ready(): boolean {
     return this._ready;
   }
+
   getSlippage(): number {
     const allowedSlippage = this._config.allowedSlippage;
     const nd = allowedSlippage.match(percentRegexp);
@@ -70,6 +72,7 @@ export class Jupiter {
   //   return await
   // }
   // async estimateTrade(req: PriceRequest) {}
+
   async price(req: PriceRequest) {
     const baseSymbol = req.base.replace('_', '');
     const quoteSymbol = req.quote.replace('_', '');
@@ -80,12 +83,19 @@ export class Jupiter {
       throw new Error('INVALID TOKEN');
     }
 
+    const dexes = req.dexes || [];
+    const onlyDirectRoutes = req.onlyDirectRoutes || true;
+
     const isBuy: boolean = req.side === 'BUY';
     const assetIn = isBuy ? quoteToken: baseToken;
     const assetOut = isBuy ? baseToken : quoteToken;
+    const swapMode = isBuy ? 'ExactOut' : 'ExactIn';
 
     const amount = Number(req.amount) * <number>pow(10, baseToken.decimals);
-    const baseURL = `https://quote-api.jup.ag/v6/quote?inputMint=${assetIn?.address}&outputMint=${assetOut?.address}&amount=${amount}`;
+    let baseURL = `https://quote-api.jup.ag/v6/quote?inputMint=${assetIn?.address}&outputMint=${assetOut?.address}&amount=${amount}&swapMode=${swapMode}&onlyDirectRoutes=${onlyDirectRoutes}`;
+    if (dexes.length > 0) {
+      baseURL += `&dexes=${dexes.length === 1 ? dexes[0] : dexes.join(',')}`;
+    }
 
     /*
     const price = await getPairData(baseToken?.address, quoteToken?.address);
@@ -106,7 +116,7 @@ export class Jupiter {
     const inAmount = parseFloat(response.data.inAmount) / Math.pow(10, inputDecimal);
     const outAmount = parseFloat(response.data.outAmount) / Math.pow(10, outputDecimal);
 
-    const price = isBuy ? inAmount / outAmount : outAmount / inAmount;
+    const price = isBuy ? (inAmount / outAmount) : (outAmount / inAmount);
     logger.info(
       `Best trade for ${baseToken.address}-${quoteToken.address}: ` +
         `${price.toFixed(6)}` +
@@ -115,8 +125,8 @@ export class Jupiter {
     return {
       timestamp: startTimestamp,
       latency: latency(startTimestamp, Date.now()),
-      base: response.data.inputMint,
-      quote: response.data.outputMint,
+      base: baseToken.address,
+      quote: quoteToken.address,
       amount: new Decimal(req.amount).toFixed(6),
       rawAmount: response.data.inAmount,
       expectedAmount: response.data.outAmount,
@@ -127,6 +137,7 @@ export class Jupiter {
       trade: response.data,
     };
   }
+
   async trade(quoteResponse: JupiterQuoteResponse, wallet: Keypair) {
     const url = 'https://quote-api.jup.ag/v6/swap';
     const response = await axios.post<SwapTransactionBuilderResponse>(url, {
