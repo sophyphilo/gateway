@@ -6,6 +6,7 @@ import {
   PollRequest,
   SolanaAsset,
 } from './solana.request';
+import { tokenValueToString } from '../../services/base';
 import { validateAssetsRequest } from '../algorand/algorand.validators';
 
 export class SolanaController {
@@ -16,8 +17,9 @@ export class SolanaController {
     const balances: Record<string, string> = {};
     const account = await solana.getAccountFromAddress(req.address);
     if (req.tokenSymbols.includes(solana.nativeTokenSymbol)) {
-      balances[solana.nativeTokenSymbol] =
-        await solana.getNativeBalance(account);
+      balances[solana.nativeTokenSymbol] = tokenValueToString(
+        await solana.getNativeBalance(account)
+      );
     }
 
     for (const token of req.tokenSymbols) {

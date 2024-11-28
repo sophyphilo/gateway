@@ -1,7 +1,7 @@
 networks:
   mainnet:
-    nodeURL: https://alien-late-resonance.solana-mainnet.quiknode.pro/148db7e65a5b33b040183b0b0516359d59a0b0e6/
+    nodeURL: https://mainnet.helius-rpc.com/?api-key=c60223ae-f596-4e91-a8cf-90febaf365cb
     tokenListType: 'FILE'
-    tokenListSource: '/home/gateway/conf/lists/solana_jupiter_tokens.json'
+    tokenListSource: 'conf/lists/solana_jupiter_tokens.json'
 nativeCurrencySymbol: SOL
 gasLimitEstimate: 500000

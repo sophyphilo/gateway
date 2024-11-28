@@ -1,6 +1,7 @@
 // import { SolonaAsset } from './solana.request';
 import LRUCache from 'lru-cache';
 // import { AlgorandController } from '../algorand/algorand.controller';
+import { BigNumber } from 'ethers';
 import { Connection, Keypair, PublicKey } from '@solana/web3.js';
 import { getSolanaConfig } from './solana.config';
 import * as bip39 from 'bip39';
@@ -8,7 +9,7 @@ import { derivePath } from 'ed25519-hd-key';
 import bs58 from 'bs58';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { SolanaController } from './solana.controller';
-import { walletPath } from '../../services/base';
+import { TokenValue, walletPath } from '../../services/base';
 import fse from 'fs-extra';
 import { ConfigManagerCertPassphrase } from '../../services/config-manager-cert-passphrase';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
@@ -105,9 +106,10 @@ export class Solana {
     return Solana._instances.get(config.network.name) as Solana;
   }
 
-  public async getNativeBalance(account: Keypair): Promise<string> {
+  public async getNativeBalance(account: Keypair): Promise<TokenValue> {
+    const solanaAsset = this._assetMap[this.nativeTokenSymbol];
     const balance = await this.connection.getBalance(account.publicKey);
-    return (balance ?? 0).toString();
+    return { value: BigNumber.from(balance), decimals: solanaAsset.decimals };
   }
 
   public async getAssociatedTokenAccount(
@@ -121,10 +123,11 @@ export class Solana {
     return associatedAccount;
   }
 
-  public async getAssetBalance(account: Keypair, tokenAddress: string) {
+  public async getAssetBalance(account: Keypair, tokenName: string) {
+    const solanaAsset = this._assetMap[tokenName];
     try {
       const associatedAccount = await this.getAssociatedTokenAccount(
-        tokenAddress,
+        solanaAsset.address,
         account.publicKey.toString(),
       );
       const assetBalance =
