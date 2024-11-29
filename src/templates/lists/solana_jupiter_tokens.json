@@ -50,6 +50,20 @@
       "symbol": "MEW",
       "decimals": 5,
       "logoURI": "https://image-cdn.solana.fm/images/?imageUrl=https://metadata.jito.network/token/jto/image"
+    },
+    {
+      "address": "2qEHjDLDLbuBgRYvsxhc5D6uDWAivNFZGan56P1tpump",
+      "name": "Peanut the Squirrel",
+      "symbol": "PNUT",
+      "decimals": 6,
+      "logoURI": "https://image-cdn.solana.fm/images/?imageUrl=https://metadata.jito.network/token/jto/image"
+    },
+    {
+      "address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+      "name": "dogwifhat",
+      "symbol": "$WIF",
+      "decimals": 6,
+      "logoURI": "https://image-cdn.solana.fm/images/?imageUrl=https://metadata.jito.network/token/jto/image"
     }
   ]
 }
