@@ -96,7 +96,7 @@ export class Jupiter {
     if (dexes.length > 0) {
       baseURL += `&dexes=${dexes.length === 1 ? dexes[0] : dexes.join(',')}`;
     }
-
+    logger.info(`Jupiter API URL: ${baseURL}`);
     /*
     const price = await getPairData(baseToken?.address, quoteToken?.address);
     const basePriceInUSD = price.data[baseToken?.address].price;
@@ -144,9 +144,13 @@ export class Jupiter {
       quoteResponse,
       userPublicKey: wallet.publicKey.toString(),
       wrapAndUnwrapSol: true,
+      prioritizationFeeLamports: 'auto',
+      asLegacyTransaction: false,
+      /*
       prioritizationFeeLamports: {
         autoMultiplier: 2,
       },
+      */
     });
     const swapTransactionBuf = Buffer.from(
       response.data.swapTransaction,
@@ -160,14 +164,19 @@ export class Jupiter {
       rawTransaction,
       {
         skipPreflight: true,
-        maxRetries: 2,
+        preflightCommitment: 'confirmed',
+        //maxRetries: 0,
       },
     );
+
     await this.chain.connection.confirmTransaction({
       blockhash: latestBlockHash.blockhash,
       lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
       signature: txid,
     });
+    //await this.chain.connection.confirmTransaction(txid, 'confirmed');
+
+
     return { txid, ...response.data };
   }
 }
