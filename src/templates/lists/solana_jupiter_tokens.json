@@ -29,6 +29,27 @@
       "symbol": "SOL",
       "decimals": 9,
       "logoURI": "https://image-cdn.solana.fm/images/?imageUrl=https://metadata.jito.network/token/jto/image"
+    },
+    {
+      "address": "7BgBvyjrZX1YKz4oh9mjb8ZScatkkwb8DzFx7LoiVkM3",
+      "name": "SLERF",
+      "symbol": "SLERF",
+      "decimals": 9,
+      "logoURI": "https://image-cdn.solana.fm/images/?imageUrl=https://metadata.jito.network/token/jto/image"
+    },
+    {
+      "address": "ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82",
+      "name": "BOOK OF MEME",
+      "symbol": "BOME",
+      "decimals": 6,
+      "logoURI": "https://image-cdn.solana.fm/images/?imageUrl=https://metadata.jito.network/token/jto/image"
+    },
+    {
+      "address": "MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5",
+      "name": "cat in a dogs world",
+      "symbol": "MEW",
+      "decimals": 5,
+      "logoURI": "https://image-cdn.solana.fm/images/?imageUrl=https://metadata.jito.network/token/jto/image"
     }
   ]
 }
