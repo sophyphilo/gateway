@@ -194,6 +194,9 @@ export class Solana {
   }
 
   public async getTransaction(txHash: string): Promise<any> {
+    //TODO:
+    let txStatus = 1
+    /*
     try {
       const txInfo = await this.connection.getParsedTransaction(txHash);
       const slot = await this.connection.getSlot();
@@ -208,6 +211,11 @@ export class Solana {
       }
     } catch (e) {
       return null;
+    }
+    */
+    return {
+      txHash,
+      txStatus,
     }
   }
   public async getAccountFromAddress(address: string) {
