@@ -146,10 +146,12 @@ export class Jupiter {
       userPublicKey: wallet.publicKey.toString(),
       wrapAndUnwrapSol: true,
       dynamicComputeUnitLimit: true,
+      /*
       dynamicSlippage: {
         // This will set an optimized slippage to ensure high success rate
-        maxBps: 100, // Make sure to set a reasonable cap here to prevent MEV
+        maxBps: 10, // Make sure to set a reasonable cap here to prevent MEV
       },
+      */
       //prioritizationFeeLamports: 'auto',
       prioritizationFeeLamports: {
         priorityLevelWithMaxLamports: {
