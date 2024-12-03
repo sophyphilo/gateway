@@ -152,6 +152,10 @@ export class Jupiter {
         maxBps: 10, // Make sure to set a reasonable cap here to prevent MEV
       },
       */
+      dynamicSlippage: {
+        minBps: 0,
+        maxBps: 10
+      },
       //prioritizationFeeLamports: 'auto',
       prioritizationFeeLamports: {
         priorityLevelWithMaxLamports: {
