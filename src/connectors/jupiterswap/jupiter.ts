@@ -139,12 +139,24 @@ export class Jupiter {
   }
 
   async trade(quoteResponse: JupiterQuoteResponse, wallet: Keypair) {
+    logger.info('Jupiter swap start');
     const url = 'https://quote-api.jup.ag/v6/swap';
     const response = await axios.post<SwapTransactionBuilderResponse>(url, {
       quoteResponse,
       userPublicKey: wallet.publicKey.toString(),
       wrapAndUnwrapSol: true,
-      prioritizationFeeLamports: 'auto',
+      dynamicComputeUnitLimit: true,
+      dynamicSlippage: {
+        // This will set an optimized slippage to ensure high success rate
+        maxBps: 100, // Make sure to set a reasonable cap here to prevent MEV
+      },
+      //prioritizationFeeLamports: 'auto',
+      prioritizationFeeLamports: {
+        priorityLevelWithMaxLamports: {
+          maxLamports: 1000000,
+          priorityLevel: "veryHigh" // If you want to land transaction fast, set this to use `veryHigh`. You will pay on average higher priority fee.
+        }
+      },
       asLegacyTransaction: false,
       /*
       prioritizationFeeLamports: {
@@ -152,14 +164,19 @@ export class Jupiter {
       },
       */
     });
+    logger.info(`Jupiter swap response: ${JSON.stringify(response.data)}`);
     const swapTransactionBuf = Buffer.from(
       response.data.swapTransaction,
       'base64',
     );
     const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
+    logger.info('Transaction deserialized');
+
     transaction.sign([wallet]);
     const latestBlockHash = await this.chain.connection.getLatestBlockhash();
     const rawTransaction = transaction.serialize();
+    logger.info('Transaction serialized');
+
     const txid = await this.chain.connection.sendRawTransaction(
       rawTransaction,
       {
@@ -168,12 +185,15 @@ export class Jupiter {
         //maxRetries: 0,
       },
     );
+    logger.info(`Jupiter sendRawTransaction, txid: ${txid}`);
 
     await this.chain.connection.confirmTransaction({
       blockhash: latestBlockHash.blockhash,
       lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
       signature: txid,
-    });
+    }, 'confirmed');
+    logger.info(`Jupiter confirmTransaction completed, txid: ${txid}`);
+
     //await this.chain.connection.confirmTransaction(txid, 'confirmed');
 
 
