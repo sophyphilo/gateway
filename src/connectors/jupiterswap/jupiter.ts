@@ -2,7 +2,7 @@ import LRUCache from 'lru-cache';
 import { Solana } from '../../chains/solana/solana';
 import { logger } from '../../services/logger';
 import { JupiterswapConfig } from './jupiterswap.config';
-import { getAlgorandConfig } from '../../chains/algorand/algorand.config';
+import { getSolanaConfig } from '../../chains/solana/solana.config';
 import { percentRegexp } from '../../services/config-manager-v2';
 import { PriceRequest } from '../../amm/amm.requests';
 import axios from 'axios';
@@ -14,22 +14,40 @@ import { latency } from '../../services/base';
 import Decimal from 'decimal.js-light';
 // import { getPairData } from './jupiter.controller';
 import { pow } from 'mathjs';
-import { Keypair, VersionedTransaction } from '@solana/web3.js';
+import bs58 from 'bs58'
+import {
+  Keypair,
+  VersionedTransaction,
+  /*
+  ComputeBudgetProgram,
+  SystemProgram,
+  Transaction,
+  PublicKey,
+  */
+} from '@solana/web3.js';
+import { JitoJsonRpcClient }  from './jitoClient';
 
 export class Jupiter {
   private static _instances: LRUCache<string, Jupiter>;
   private chain: Solana;
   private _ready: boolean = false;
   private _config: JupiterswapConfig.NetworkConfig;
-  // private _swap
+  // Jito 客户端实例
+  private jitoClient: JitoJsonRpcClient;
+
   private constructor(network: string) {
     this._config = JupiterswapConfig.config;
     this.chain = Solana.getInstance(network);
-    // this._swap = Swap
+
+    // 初始化 Jito 客户端
+    this.jitoClient = new JitoJsonRpcClient(
+      'https://mainnet.block-engine.jito.wtf/api/v1',
+      /*'YOUR_UUID_API_KEY',*/
+    );
   }
 
   public static getInstance(network: string): Jupiter {
-    const config = getAlgorandConfig(network);
+    const config = getSolanaConfig(network);
     if (Jupiter._instances === undefined) {
       Jupiter._instances = new LRUCache<string, Jupiter>({
         max: config.network.maxLRUCacheInstances,
@@ -92,11 +110,10 @@ export class Jupiter {
     const swapMode = isBuy ? 'ExactOut' : 'ExactIn';
 
     const amount = Number(req.amount) * <number>pow(10, baseToken.decimals);
-    let baseURL = `https://quote-api.jup.ag/v6/quote?inputMint=${assetIn?.address}&outputMint=${assetOut?.address}&amount=${amount}&swapMode=${swapMode}&onlyDirectRoutes=${onlyDirectRoutes}`;
+    let baseURL = `https://quote-api.jup.ag/v6/quote?inputMint=${assetIn?.address}&outputMint=${assetOut?.address}&amount=${amount}&swapMode=${swapMode}&onlyDirectRoutes=${onlyDirectRoutes}&slippageBps=5`;
     if (dexes.length > 0) {
       baseURL += `&dexes=${dexes.length === 1 ? dexes[0] : dexes.join(',')}`;
     }
-    logger.info(`Jupiter API URL: ${baseURL}`);
     /*
     const price = await getPairData(baseToken?.address, quoteToken?.address);
     const basePriceInUSD = price.data[baseToken?.address].price;
@@ -108,6 +125,7 @@ export class Jupiter {
     */
 
     const response = await axios.get<JupiterQuoteResponse>(baseURL);
+    logger.info(`Jupiter API URL: ${baseURL}, response.data: ${JSON.stringify(response.data)}`);
 
     // 获取对应代币的 decimal 信息
     const inputDecimal = assetIn.decimals || 6;
@@ -146,51 +164,71 @@ export class Jupiter {
       userPublicKey: wallet.publicKey.toString(),
       wrapAndUnwrapSol: true,
       dynamicComputeUnitLimit: true,
-      /*
       dynamicSlippage: {
         // This will set an optimized slippage to ensure high success rate
-        maxBps: 10, // Make sure to set a reasonable cap here to prevent MEV
-      },
-      */
-      dynamicSlippage: {
-        minBps: 0,
-        maxBps: 10
+        maxBps: 5, // Make sure to set a reasonable cap here to prevent MEV
       },
       //prioritizationFeeLamports: 'auto',
+      //computeUnitPriceMicroLamports: 'auto',
       prioritizationFeeLamports: {
+        jitoTipLamports: 5000,
+        /*
         priorityLevelWithMaxLamports: {
-          maxLamports: 1000000,
+          maxLamports: 100000,
           priorityLevel: "veryHigh" // If you want to land transaction fast, set this to use `veryHigh`. You will pay on average higher priority fee.
         }
+        */
       },
-      asLegacyTransaction: false,
+      //skipUserAccountsRpcCalls: true,
       /*
       prioritizationFeeLamports: {
         autoMultiplier: 2,
       },
       */
     });
-    logger.info(`Jupiter swap response: ${JSON.stringify(response.data)}`);
+    logger.info(`Jupiter swap, quote: ${JSON.stringify(quoteResponse)}, response: ${JSON.stringify(response.data)}`);
     const swapTransactionBuf = Buffer.from(
       response.data.swapTransaction,
       'base64',
     );
     const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
     logger.info('Transaction deserialized');
+    
+    /*
+    const randomTipAccount = await this.jitoClient.getRandomTipAccount(); // 获取 Jito 随机 Tip Account
+    const jitoTipAccount = new PublicKey(randomTipAccount);
+
+    // 添加优先级费用和 Jito Tip 转账指令
+    const priorityFee = 1000; // 单位为 lamports，根据实际需求调整
+    const jitoTipAmount = 5000; // 单位为 lamports，根据实际需求调整
+    const priorityFeeInstruction = ComputeBudgetProgram.setComputeUnitPrice({
+      microLamports: priorityFee,
+    });
+    const tipInstruction = SystemProgram.transfer({
+      fromPubkey: wallet.publicKey,
+      toPubkey: jitoTipAccount,
+      lamports: jitoTipAmount,
+    });
+    */
 
     transaction.sign([wallet]);
     const latestBlockHash = await this.chain.connection.getLatestBlockhash();
     const rawTransaction = transaction.serialize();
+    const base58Transaction = bs58.encode(rawTransaction);
+
     logger.info('Transaction serialized');
 
+    /*
     const txid = await this.chain.connection.sendRawTransaction(
       rawTransaction,
       {
         skipPreflight: true,
         preflightCommitment: 'confirmed',
-        //maxRetries: 0,
       },
     );
+    */
+    const result = await this.jitoClient.sendTxn([base58Transaction], false);
+    const txid = result.result;
     logger.info(`Jupiter sendRawTransaction, txid: ${txid}`);
 
     await this.chain.connection.confirmTransaction({
@@ -199,9 +237,6 @@ export class Jupiter {
       signature: txid,
     }, 'confirmed');
     logger.info(`Jupiter confirmTransaction completed, txid: ${txid}`);
-
-    //await this.chain.connection.confirmTransaction(txid, 'confirmed');
-
 
     return { txid, ...response.data };
   }

@@ -23,7 +23,6 @@
     "test:scripts": "jest -i --verbose ./test-scripts/*.test.ts"
   },
   "dependencies": {
-    "@raydium-io/raydium-sdk-v2": "0.1.92-alpha",
     "@balancer-labs/sdk": "^1.1.5",
     "@bancor/carbon-sdk": "^0.0.93-DEV",
     "@cosmjs/amino": "^0.32.2",
@@ -51,6 +50,7 @@
     "@pancakeswap/v3-sdk": "^3.7.0",
     "@pangolindex/sdk": "^1.1.0",
     "@perp/sdk-curie": "^1.16.0",
+    "@raydium-io/raydium-sdk-v2": "0.1.92-alpha",
     "@solana/spl-token": "^0.4.8",
     "@sushiswap/sdk": "^5.0.0-canary.116",
     "@taquito/rpc": "^17.0.0",
