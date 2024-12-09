@@ -110,7 +110,7 @@ export class Jupiter {
     const swapMode = isBuy ? 'ExactOut' : 'ExactIn';
 
     const amount = Number(req.amount) * <number>pow(10, baseToken.decimals);
-    let baseURL = `https://quote-api.jup.ag/v6/quote?inputMint=${assetIn?.address}&outputMint=${assetOut?.address}&amount=${amount}&swapMode=${swapMode}&onlyDirectRoutes=${onlyDirectRoutes}&slippageBps=5`;
+    let baseURL = `https://quote-api.jup.ag/v6/quote?inputMint=${assetIn?.address}&outputMint=${assetOut?.address}&amount=${amount}&swapMode=${swapMode}&onlyDirectRoutes=${onlyDirectRoutes}&restrictIntermediateTokens=true&slippageBps=5`;
     if (dexes.length > 0) {
       baseURL += `&dexes=${dexes.length === 1 ? dexes[0] : dexes.join(',')}`;
     }
@@ -171,7 +171,7 @@ export class Jupiter {
       //prioritizationFeeLamports: 'auto',
       //computeUnitPriceMicroLamports: 'auto',
       prioritizationFeeLamports: {
-        jitoTipLamports: 50000,
+        jitoTipLamports: 5000,
         /*
         priorityLevelWithMaxLamports: {
           maxLamports: 100000,

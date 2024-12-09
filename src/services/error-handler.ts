@@ -108,6 +108,7 @@ export const ENDPOINT_NOT_SUPPORTED_ERROR_CODE = 1018;
 export const INSUFFICIENT_FUNDS_ERROR_CODE = 1019;
 export const GAS_LIMIT_EXCEEDED_ERROR_CODE = 1020;
 export const AMOUNT_LESS_THAN_MIN_AMOUNT_ERROR_CODE = 1021;
+export const INVALID_QUOTE_RESPONSE_ERROR_CODE = 1022;
 
 export const NETWORK_ERROR_MESSAGE =
   'Network error. Please check your node URL, API key, and Internet connection.';
