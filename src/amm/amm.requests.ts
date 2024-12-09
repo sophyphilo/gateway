@@ -77,7 +77,7 @@ export interface TradeRequest extends NetworkSelectionRequest {
   dexes?: string[];
   onlyDirectRoutes?: boolean;
   withPriceResponse?: boolean;
-  priceResponse?: PriceResponse;
+  priceResp?: PriceResponse;
 }
 
 export interface TradeResponse {

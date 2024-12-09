@@ -49,7 +49,7 @@ export async function jupiterTrade(
   const { address } = req;
   const keypair = await solana.getAccountFromAddress(address);
   const limitPrice = req.limitPrice;
-  const trade = (req.withPriceResponse && req.priceResponse) ? req.priceResponse : await jupiter.price(<PriceRequest>req);
+  const trade = (req.withPriceResponse && req.priceResp) ? req.priceResp : await jupiter.price(<PriceRequest>req);
   // 确保 trade 是有效的
   if (!trade || !trade.trade) {
     throw new HttpException(400, 'Invalid trade response', INVALID_QUOTE_RESPONSE_ERROR_CODE);
