@@ -171,7 +171,7 @@ export class Jupiter {
       //prioritizationFeeLamports: 'auto',
       //computeUnitPriceMicroLamports: 'auto',
       prioritizationFeeLamports: {
-        jitoTipLamports: 5000,
+        jitoTipLamports: 10000,
         /*
         priorityLevelWithMaxLamports: {
           maxLamports: 100000,
