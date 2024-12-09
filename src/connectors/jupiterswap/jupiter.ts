@@ -59,7 +59,7 @@ export class Jupiter {
         Jupiter._instances.set(network, new Jupiter(network));
       } else {
         throw new Error(
-          `Tinyman.getInstance received an unexpected network: ${network}.`,
+          `Solana.getInstance received an unexpected network: ${network}.`,
         );
       }
     }
@@ -171,7 +171,7 @@ export class Jupiter {
       //prioritizationFeeLamports: 'auto',
       //computeUnitPriceMicroLamports: 'auto',
       prioritizationFeeLamports: {
-        jitoTipLamports: 5000,
+        jitoTipLamports: 50000,
         /*
         priorityLevelWithMaxLamports: {
           maxLamports: 100000,
