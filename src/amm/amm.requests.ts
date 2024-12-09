@@ -76,6 +76,7 @@ export interface TradeRequest extends NetworkSelectionRequest {
   poolId?: string;
   dexes?: string[];
   onlyDirectRoutes?: boolean;
+  withPriceResponse?: boolean;
   priceResponse?: PriceResponse;
 }
 
