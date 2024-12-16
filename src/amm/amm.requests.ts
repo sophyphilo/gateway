@@ -1,6 +1,8 @@
 import { CoinAndSymbol, SerializableExtendedPool as CosmosSerializableExtendedPool } from '../chains/osmosis/osmosis.types';
 import { PerpPosition } from '../connectors/perp/perp';
-import { JupiterQuoteResponse } from '../connectors/jupiterswap/jupiter.request';
+//import { JupiterQuoteResponse } from '../connectors/jupiterswap/jupiter.request';
+import { QuoteResponse } from '@jup-ag/api';
+
 import {
   NetworkSelectionRequest,
   PositionInfo as LPPositionInfo,
@@ -36,7 +38,7 @@ export interface PriceResponse {
   gasLimit: number;
   gasCost: string; // also gasUsed for Cosmos prices
   gasWanted?: string;
-  trade?: JupiterQuoteResponse;
+  trade?: QuoteResponse;
 }
 
 export interface PoolPriceRequest extends NetworkSelectionRequest {

@@ -5,8 +5,10 @@ import {
   TradeRequest,
   TradeResponse,
 } from '../../amm/amm.requests';
+/*
 import axios from 'axios';
 import { JupiterPriceResponse } from './jupiter.request';
+*/
 import { logger } from '../../services/logger';
 import Decimal from 'decimal.js-light';
 import {
@@ -18,11 +20,14 @@ import {
   INVALID_QUOTE_RESPONSE_ERROR_CODE,
 } from '../../services/error-handler';
 import { latency } from '../../services/base';
+
+/*
 export async function getPairData(base: string, quote: string) {
   const baseURL = `https://api.jup.ag/price/v2?ids=${base},${quote}&showExtraInfo=true`;
   const response = await axios.get<JupiterPriceResponse>(baseURL);
   return response.data;
 }
+*/
 
 export async function jupiterPrice(
   solana: Solana,
@@ -101,7 +106,7 @@ export async function jupiterTrade(
     price: String(estimatedPrice),
     gasPrice: 10,
     gasPriceToken: solana.nativeTokenSymbol,
-    gasLimit: tx.computeUnitLimit,
+    gasLimit: 0/*tx.computeUnitLimit*/,
     gasCost: String(10),
     txHash: tx.txid,
   };
