@@ -26,7 +26,7 @@
     {
       "address": "So11111111111111111111111111111111111111112",
       "name": "Wrapped Solana",
-      "symbol": "SOL",
+      "symbol": "WSOL",
       "decimals": 9,
       "logoURI": "https://image-cdn.solana.fm/images/?imageUrl=https://metadata.jito.network/token/jto/image"
     },
