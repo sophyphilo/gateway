@@ -80,6 +80,9 @@ export interface TradeRequest extends NetworkSelectionRequest {
   onlyDirectRoutes?: boolean;
   withPriceResponse?: boolean;
   priceResp?: PriceResponse;
+  jitoTip?: string;
+  isStakedNode?: boolean;
+  computeUnitPrice?: string; //单位:微lamport
 }
 
 export interface TradeResponse {

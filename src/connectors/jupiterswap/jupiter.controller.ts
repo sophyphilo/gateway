@@ -92,7 +92,9 @@ export async function jupiterTrade(
     }
   }
 
-  const tx = await jupiter.trade(trade.trade, keypair);
+  const jitoTip = req.jitoTip ? Number(req.jitoTip) : 0;
+  const unitPrice = req.computeUnitPrice ? Number(req.computeUnitPrice) : 0;
+  const tx = await jupiter.trade(trade.trade, keypair, jitoTip, req.isStakedNode, unitPrice);
   logger.info(`jupiterTrade end, tx: ${JSON.stringify(tx)}, latency: ${latency(startTimestamp, Date.now())}`);
   return {
     network: solana.network,

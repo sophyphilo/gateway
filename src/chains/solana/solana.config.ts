@@ -3,6 +3,7 @@ import { ConfigManagerV2 } from '../../services/config-manager-v2';
 export interface NetworkConfig {
   name: string;
   nodeURL: string;
+  stakedNodeURL: string;
   assetListType: string;
   assetListSource: string;
   maxLRUCacheInstances: number;
@@ -18,6 +19,9 @@ export function getSolanaConfig(network: string): Config {
       name: network,
       nodeURL: ConfigManagerV2.getInstance().get(
         'solana.networks.' + network + '.nodeURL',
+      ),
+      stakedNodeURL: ConfigManagerV2.getInstance().get(
+        'solana.networks.' + network + '.stakedNodeURL',
       ),
       assetListType: ConfigManagerV2.getInstance().get(
         'solana.networks.' + network + '.assetListType',

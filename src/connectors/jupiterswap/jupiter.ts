@@ -22,7 +22,7 @@ import {
   Keypair,
   VersionedTransaction,
   TransactionInstruction,
-  //ComputeBudgetProgram,
+  ComputeBudgetProgram,
   SystemProgram,
   //Transaction,
   PublicKey,
@@ -176,7 +176,7 @@ export class Jupiter {
     };
   }
 
-  async trade(quoteResponse: QuoteResponse, wallet: Keypair) {
+  async trade(quoteResponse: QuoteResponse, wallet: Keypair, jitoTip?: number, isStakedNode?: boolean, unitPrice?: number) {
     logger.info('Jupiter swap start');
     const response = await this.jupiterApi.swapInstructionsPost({
         swapRequest: {
@@ -203,17 +203,23 @@ export class Jupiter {
       addressLookupTableAddresses,
     } = response
 
+    const unitPriceInstruction = (unitPrice === 0 || unitPrice == null) ? null : ComputeBudgetProgram.setComputeUnitPrice({
+                                                                microLamports: unitPrice,
+                                                            });
+
+    const isJito = !(jitoTip === 0 || jitoTip == null)
     const randomIndex = Math.floor(Math.random() * this.jitoTipAccounts.length);
     const randomTipAccount = this.jitoTipAccounts[randomIndex]; //await this.jitoClient.getRandomTipAccount();
     const jitoTipAccount = new PublicKey(randomTipAccount);
-    const jitoTipInstruction = SystemProgram.transfer({
-      fromPubkey: wallet.publicKey,
-      toPubkey: jitoTipAccount,
-      lamports: 1000,
-    })
-    //logger.info(`Jupiter swap, quote: ${JSON.stringify(quoteResponse)}, computeBudgetInstructions: ${JSON.stringify(computeBudgetInstructions)}, setupInstructions: ${JSON.stringify(setupInstructions)}, swapInstruction: ${JSON.stringify(swapInstruction)}, cleanupInstruction: ${JSON.stringify(cleanupInstruction)}, addressLookupTableAddresses: ${JSON.stringify(addressLookupTableAddresses)}`);
+    const jitoTipInstruction = (isJito && !isStakedNode && jitoTip) ? SystemProgram.transfer({
+                                                          fromPubkey: wallet.publicKey,
+                                                          toPubkey: jitoTipAccount,
+                                                          lamports: jitoTip,
+                                                        }) : null
+
     const instructions: TransactionInstruction[] = [
       ...computeBudgetInstructions.map(this.instructionDataToTransactionInstruction),
+      unitPriceInstruction,
       //...setupInstructions.map(this.instructionDataToTransactionInstruction),
       this.instructionDataToTransactionInstruction(swapInstruction),
       //this.instructionDataToTransactionInstruction(cleanupInstruction),
@@ -222,34 +228,52 @@ export class Jupiter {
 
     const addressLookupTableAccounts = await this.getAdressLookupTableAccounts(
       addressLookupTableAddresses,
-      this.chain.connection
+      this.chain.stakedConnection
     );
 
-    const { blockhash, lastValidBlockHeight } = await this.chain.connection.getLatestBlockhash();
+    const { blockhash, lastValidBlockHeight } = await this.chain.stakedConnection.getLatestBlockhash();
 
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
       recentBlockhash: blockhash,
       instructions,
     }).compileToV0Message(addressLookupTableAccounts);
-    logger.info(`TransactionMessage constructed, messageV0: ${JSON.stringify(messageV0)}`);    
+    logger.info(`TransactionMessage constructed, messageV0: ${JSON.stringify(messageV0)}`);
 
     const transaction = new VersionedTransaction(messageV0);
     transaction.sign([wallet]);
 
-    const rawTransaction = transaction.serialize();
     //const base64Transaction = Buffer.from(rawTransaction).toString('base64');
-    const base58Transaction = bs58.encode(rawTransaction);
     // const txid = await this.chain.connection.sendRawTransaction(rawTransaction, {
     //     skipPreflight: true,
     //     maxRetries: 2
     // });
     
-    const result = await this.jitoClient.sendTxn([base58Transaction], false);
-    const txid = result.result;
-    logger.info(`Jupiter sendRawTransaction, txid: ${txid}`);
-
-    await this.chain.connection.confirmTransaction({ signature: txid, blockhash, lastValidBlockHeight }, 'confirmed');
+    let txid = null;
+    if (isStakedNode) {
+      const result = await this.chain.stakedConnection.sendTransaction(transaction, {
+        maxRetries: 0,
+        skipPreflight: true
+      });
+      txid = result;
+      logger.info(`Jupiter sendRawTransaction use StakedNode, txid: ${txid}`);
+      await this.chain.stakedConnection.confirmTransaction({ signature: txid, blockhash, lastValidBlockHeight }, 'confirmed');
+    } else if (isJito) {
+      const rawTransaction = transaction.serialize();
+      const base58Transaction = bs58.encode(rawTransaction);
+      const result = await this.jitoClient.sendTxn([base58Transaction], false);
+      txid = result.result;
+      logger.info(`Jupiter sendRawTransaction use Jito, txid: ${txid}`);
+      await this.chain.stakedConnection.confirmTransaction({ signature: txid, blockhash, lastValidBlockHeight }, 'confirmed');
+    } else {
+      const result = await this.chain.connection.sendTransaction(transaction, {
+        maxRetries: 0,
+        skipPreflight: true
+      });
+      txid = result;
+      logger.info(`Jupiter sendRawTransaction use NormalNode, txid: ${txid}`);
+      await this.chain.connection.confirmTransaction({ signature: txid, blockhash, lastValidBlockHeight }, 'confirmed');
+    }
 
 
     /*

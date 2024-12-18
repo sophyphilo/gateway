@@ -15,6 +15,7 @@ import { ConfigManagerCertPassphrase } from '../../services/config-manager-cert-
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 import { SolanaAsset } from './solana.request';
 import { promises as fs } from 'fs';
+import { logger } from '../../services/logger';
 
 export class Solana {
   public nativeTokenSymbol: string = 'SOL';
@@ -29,13 +30,16 @@ export class Solana {
   // public gasLimit: number;
   // public gasCost: number;
   public connection: Connection;
+  public stakedConnection: Connection;
   public controller: typeof SolanaController;
   private _chainId: number = 900;
   private _rpcUrl: string;
 
-  constructor(network: string, rpc: string, assetListSource: string) {
+  constructor(network: string, rpc: string, stakedRpc: string, assetListSource: string) {
+    logger.info(`Solana constructor, rpc: ${rpc}, stakedRpc: ${stakedRpc}`);
     this._network = network;
     this.connection = new Connection(rpc);
+    this.stakedConnection = new Connection(stakedRpc);
     this.controller = SolanaController;
     this._assetListSource = assetListSource;
     this._rpcUrl = rpc;
@@ -95,7 +99,7 @@ export class Solana {
 
         Solana._instances.set(
           config.network.name,
-          new Solana(network, config.network.nodeURL, assetListSource),
+          new Solana(network, config.network.nodeURL, config.network.stakedNodeURL, assetListSource),
         );
       } else {
         throw new Error(

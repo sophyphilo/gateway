@@ -11,6 +11,9 @@
             "nodeURL": {
               "type": "string"
             },
+            "stakedNodeURL": {
+              "type": "string"
+            },
             "tokenListType": {
               "type": "string"
             },
