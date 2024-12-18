@@ -250,6 +250,7 @@ export class Jupiter {
     // });
     
     let txid = null;
+    const currentSlot = await this.chain.stakedConnection.getSlot();
     if (isStakedNode) {
       const result = await this.chain.stakedConnection.sendTransaction(transaction, {
         maxRetries: 0,
@@ -275,7 +276,7 @@ export class Jupiter {
       await this.chain.connection.confirmTransaction({ signature: txid, blockhash, lastValidBlockHeight }, 'confirmed');
     }
 
-
+    await this.checkTxStatus(this.chain.stakedConnection, txid, currentSlot)
     /*
     const result = await this.jitoClient.sendBundle([[base58Transaction]]);
     logger.info(`Jupiter sendBundle, bundleId: ${result.result}, result: ${result}`);
@@ -361,6 +362,28 @@ export class Jupiter {
     logger.info(`Jupiter confirmTransaction completed, txid: ${txid}`);
 
     return { txid/*, ...response.data*/ };
+  }
+
+  private async checkTxStatus(connection: Connection, signature: string, slot: number): Promise<number> {
+    const txn = await connection
+      .getTransaction(signature, {
+        commitment: "confirmed",
+        maxSupportedTransactionVersion: 10,
+      })
+      .catch(() => {
+        return null;
+      });
+  
+    if (txn !== null) {
+      const slotProcessed = txn.slot - slot;
+      logger.info(
+        `Transaction ${signature} landed in slot ${txn.slot}. Submitted in slot ${slot}. Processed in ${slotProcessed} slots.`
+      );
+      return slotProcessed;
+    } else {
+      logger.info(`Transaction ${signature} not landed.`);
+    }
+    return -1;
   }
 
   private instructionDataToTransactionInstruction (
