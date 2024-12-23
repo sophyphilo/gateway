@@ -1,10 +1,9 @@
+import bs58 from 'bs58';
+import Decimal from 'decimal.js-light';
 import LRUCache from 'lru-cache';
-import { Solana } from '../../chains/solana/solana';
-import { logger } from '../../services/logger';
-import { JupiterswapConfig } from './jupiterswap.config';
-import { getSolanaConfig } from '../../chains/solana/solana.config';
-import { percentRegexp } from '../../services/config-manager-v2';
-import { PriceRequest } from '../../amm/amm.requests';
+// import { getPairData } from './jupiter.controller';
+import { pow } from 'mathjs';
+
 /*
 import axios from 'axios';
 import {
@@ -12,25 +11,34 @@ import {
   SwapTransactionBuilderResponse,
 } from './jupiter.request';
 */
-import { createJupiterApiClient, DefaultApi, QuoteGetRequest, QuoteResponse, Instruction, AccountMeta } from '@jup-ag/api';
-import { latency } from '../../services/base';
-import Decimal from 'decimal.js-light';
-// import { getPairData } from './jupiter.controller';
-import { pow } from 'mathjs';
-import bs58 from 'bs58'
 import {
-  Keypair,
-  VersionedTransaction,
-  TransactionInstruction,
-  ComputeBudgetProgram,
-  SystemProgram,
-  //Transaction,
-  PublicKey,
-  Connection,
+  AccountMeta,
+  createJupiterApiClient,
+  DefaultApi,
+  Instruction,
+  QuoteGetRequest,
+  QuoteResponse,
+} from '@jup-ag/api';
+import {
   AddressLookupTableAccount,
-  TransactionMessage
+  ComputeBudgetProgram,
+  Connection,
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  TransactionInstruction,
+  TransactionMessage,
+  VersionedTransaction,
 } from '@solana/web3.js';
-import { JitoJsonRpcClient }  from './jitoClient';
+
+import { PriceRequest } from '../../amm/amm.requests';
+import { Solana } from '../../chains/solana/solana';
+import { getSolanaConfig } from '../../chains/solana/solana.config';
+import { latency } from '../../services/base';
+import { percentRegexp } from '../../services/config-manager-v2';
+import { logger } from '../../services/logger';
+import { JitoJsonRpcClient } from './jitoClient';
+import { JupiterswapConfig } from './jupiterswap.config';
 
 export class Jupiter {
   private static _instances: LRUCache<string, Jupiter>;
@@ -250,7 +258,11 @@ export class Jupiter {
     // });
     
     let txid = null;
-    const currentSlot = await this.chain.stakedConnection.getSlot();
+    const currentSlot = await this.chain.stakedConnection.getSlot({ commitment: "confirmed" });
+    //const slotProcessed = await this.chain.stakedConnection.getSlot({ commitment: "processed" });
+    //const slotConfirmed = await this.chain.stakedConnection.getSlot({ commitment: "confirmed" });
+    //const slotFinalized = await this.chain.stakedConnection.getSlot({ commitment: "finalized" });
+    //console.log(`currentSlot: ${currentSlot}, slotProcessed: ${slotProcessed}, slotConfirmed: ${slotConfirmed}, slotFinalized: ${slotFinalized}`);
     if (isStakedNode) {
       const result = await this.chain.stakedConnection.sendTransaction(transaction, {
         maxRetries: 0,
